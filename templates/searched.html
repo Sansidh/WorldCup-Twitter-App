@@ -1,0 +1,17 @@
+{% extends "search.html" %}
+ {% block ResultData %}
+ 
+ <div class="search_result">
+    <div class="result_box">
+        <h3> Showing Results for...{{req_data}} </h3>
+
+          {{ResultData|safe}}
+
+
+
+
+			</div>
+
+
+    </div>
+ {% endblock %}

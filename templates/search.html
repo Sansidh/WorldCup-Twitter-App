@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+  {% block content %}
+    
+    <div class="s01">
+      <form action = "/search" method = "POST">
+        <fieldset>
+          <legend id="logo" align="center"></legend>
+          <legend id ="logo" align="center"><h1>Relive the memories of the WorldCup!</h1></legend>
+        </fieldset>
+		<br>
+		<br>
+        <div class="inner-form">
+          <div align="center" class="input-field first-wrap">
+            <input align="center" name="searchString" type="text" placeholder="Search for a tweet"/>
+          </div>
+          <div align="center" class="input-field third-wrap">
+            <button class="btn-search" type="submit" value="Search" >Search</button>
+          </div>
+        </div>
+      </form>
+    </div>
+	<div class="search_result">{% block ResultData %}{% endblock %}</div>
+
+  {% endblock %}

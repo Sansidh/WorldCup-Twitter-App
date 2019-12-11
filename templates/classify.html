@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+  {% block content %}
+    <div class="s01">
+      <form action="/classification" method = "POST">
+       <fieldset>
+          <legend align="center"></legend>
+          <legend align="center"><h1>Relive the memories of the WorldCup!</h1></legend>
+        </fieldset>
+		<br>
+		<br>
+        <div class="inner-form">
+          <div align = "center" class="input-field first-wrap">
+            <input align="center" name="Tweet" type="text" placeholder="Give us a Tweet..." />
+          </div>
+          <div align="center" class="input-field third-wrap">
+            <button class="btn-search" type="submit" value="Tweet" ></i> Classify</button>
+          </div>
+        </div>
+      </form>
+    </div>
+	
+	
+  {% endblock %}
+

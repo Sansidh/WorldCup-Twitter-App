@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
-#import string
 import CLog as lg
 from collections import defaultdict
 import math
@@ -12,12 +11,11 @@ from numpy.linalg import norm
 
 class CTextSearch:
     def __init__(self):
-        #nltk.download()
         self.stemmer = PorterStemmer()
         self.FileHandlingObj = fr.CRead()
-        self.FileHandlingObj.ReadFile("movies_metadata.csv")
-        self.MovieData = self.FileHandlingObj.getFileData()
-        self.postings = defaultdict(dict)
+        self.FileHandlingObj.ReadFile("fifatest.csv")
+        self.tweetData = self.FileHandlingObj.getFileData()
+        self.post = defaultdict(dict)
         self.docF = defaultdict(int)
         self.dict = set()
         self.length = []
@@ -38,19 +36,17 @@ class CTextSearch:
 
     #shpuld be called and initialize when server start
     def Read_and_initialise_document(self):
-        [self.totalDocument,TotalDimension]  = self.MovieData.shape
-        self.totalDocument = 200 #need to comment only for debuging
+        [self.totalDocument,TotalDimension]  = self.tweetData.shape
+        self.totalDocument = 28 #need to comment only for debuging
         for index in range(self.totalDocument):
-            terms = self.tokenize(self.MovieData.loc[index, 'overview'])
+            terms = self.tokenize(self.tweetData.loc[index, 'Tweet'])
             self.length.append(len(terms))
-            #print(self.length[index])
-            # updating dictionary with all available terms
             unique_terms = set(terms)
             self.dict = self.dict.union(unique_terms)
             for term in unique_terms:
                 #updating count of each term in posting(document)
 
-                self.postings[term][index] = terms.count(term)
+                self.post[term][index] = terms.count(term)
             self.logObj.progress_track(index,self.totalDocument)
 
     # should be called and initialize when server start
@@ -59,7 +55,7 @@ class CTextSearch:
         total_term = len(self.dict)
         index = 0
         for term in self.dict:
-            self.docF[term] = len(self.postings[term])
+            self.docF[term] = len(self.post[term])
             index += 1
             self.logObj.progress_track(index, total_term)
 
@@ -86,14 +82,14 @@ class CTextSearch:
         self.sorted_similarity = np.argsort(self.similarity_vec)
         #print(self.sorted_similarity)
 
-        movie_name = []
-        movie_description = []
+        user_name = []
+        tweet_description = []
         retrive_data = {}
         for result_index in range(5):
-            movie_name.append(self.MovieData.loc[self.sorted_similarity[result_index],'title'])
-            movie_description.append(self.MovieData.loc[self.sorted_similarity[result_index],'overview'])
-        retrive_data.update({"Movie":movie_name})
-        retrive_data.update({"Description": movie_description})
+            user_name.append(self.tweetData.loc[self.sorted_similarity[result_index],'Name'])
+            tweet_description.append(self.tweetData.loc[self.sorted_similarity[result_index],'Tweet'])
+        retrive_data.update({"Movie":user_name})
+        retrive_data.update({"Description": tweet_description})
         return  retrive_data
 
     #calculate cosign similarity of two tf-idf vector
@@ -121,17 +117,14 @@ class CTextSearch:
         document_vector = []
         for q_term in unique_Q_terms:
             if q_term in self.dict:
-                if id in self.postings[q_term]:
-                    tf = self.postings[q_term][id] / self.length[id]
+                if id in self.post[q_term]:
+                    tf = self.post[q_term][id] / self.length[id]
                     tf_idf = tf * self.Calculate_Inverse_Document_Frequency(q_term)
                     document_vector.append(tf_idf)
                 else:
                     document_vector.append(0)
             else:
                 document_vector.append(0)
-        #print("Document id:")
-        #print(id)
-        #print(document_vector)
         return document_vector
 
     def Calculate_Inverse_Document_Frequency(self,term):
@@ -144,13 +137,3 @@ class CTextSearch:
 
     def getFileReadObj(self):
         return self.FileHandlingObj
-
-    #added for debuging purpose
-    def DisplayData(self):
-        #print(self.MovieData.loc[:,'overview'])
-        #print(self.MovieData.head())
-        print(stopwords.words('english'))
-
-        #print(self.MovieData('titile'))
-        #print(self.MovieData.shape)
-

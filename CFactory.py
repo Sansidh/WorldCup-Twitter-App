@@ -3,7 +3,7 @@ import CFileRead as fr
 class CFactory():
     def __init__(self):
         FileHandlingObj = fr.CRead()
-        FileHandlingObj.ReadFile("movies_metadata.csv")
+        FileHandlingObj.ReadFile("fifatest.csv")
         MovieData = self.FileHandlingObj.getFileData()
 
     def ReadFile(self):
